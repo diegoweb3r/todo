@@ -1,0 +1,265 @@
+:root {
+  /* Background */
+  --background: #FFDCC4;
+
+  /* Card (Liquid Glass) */
+  --card-glass: rgba(255, 179, 179, 0.35);
+  --card-border: rgba(255, 255, 255, 0.3);
+  --card-shadow: rgba(0, 0, 0, 0.08);
+  --card-blur: blur(16px);
+
+  /* Texto */
+  --texto: #4B0F8A;
+
+  /* Títulos */
+  --titulos: #EC3C96;
+
+  /* Parágrafos */
+  --paragrafos: rgba(75, 15, 138, 0.85);
+
+  /* Botões */
+  --botao-primario: #EC3C96;
+
+  /* Destaques / Hover */
+  --destaques: #58E6FF;
+}
+
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+body{
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: var(--background);
+}
+
+header{
+    margin: 30px;
+    padding: 30px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--destaques);
+    text-align: center;
+}
+
+h1{
+    color: var(--titulos);
+    font-size: 4rem;
+    letter-spacing: 0.3rem;
+}
+
+header p{
+    color: var(--texto);
+    font-size: 0.8rem;
+    letter-spacing: 0.3rem;
+}
+
+main{
+    width: 90%;
+    display: flex;
+    gap: 30px
+}
+
+#controls-section{
+    flex: 1;
+}
+
+#todo-list{
+    flex: 2;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.todo-card{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.buttons-container{
+    flex: 1;
+    gap: 1rem;
+    display: flex;
+}
+
+.text-container{
+    flex: 2;
+}
+
+.control-card, .todo-list, .todo-card{
+    height: auto;
+    background: var(--card-glass);
+    backdrop-filter: var(--card-blur);
+    -webkit-backdrop-filter: var(--card-blur);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px var(--card-shadow);
+    margin: 10px 5px;
+    padding: 1.8rem;
+}
+
+.todo-title{
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin-bottom: .6rem;
+}
+
+.todo-type{
+    font-weight: 300;
+    font-size: 0.8rem;
+}
+
+.control-card{
+    color: var(--texto);
+}
+
+.filter-buttons-container{
+    display: flex;
+    justify-content:space-around;
+}
+
+.control-card h3{
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    font-weight:400;
+    letter-spacing: 0.1rem;
+    border-bottom: 1px solid var(--destaques);
+    padding-bottom: 0.7rem;
+    margin-bottom: 0.7rem;
+}
+
+form{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.forms-container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+input[type="text"], input[type="search"] {
+    margin: 0.5rem 0;
+    border: none;
+    border-radius: 0.7rem;
+    padding: 0.7rem;
+    width: 100%;
+}
+
+input[type="text"]:focus, input[type="search"]:focus{
+    outline: none;
+}
+
+.control-card label{
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.add-todo{
+    align-items: center;
+}
+
+#add-todo-button{
+    align-self: flex-end;
+}
+
+.search-todo{
+    display: flex;
+    flex-direction: column;
+}
+
+.search-todo button{
+    align-self: flex-end;
+}
+
+.control-buttons{
+    width: 5rem;
+    height: 2rem;
+    border: none;
+    color: var(--texto);
+    background-color: var(--botao-primario);
+    border-radius: 0.8rem;
+    cursor: pointer;
+    transition: ease 0.5s;
+}
+
+.control-buttons:hover{
+    background-color: var(--texto);
+    color: var(--botao-primario);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px var(--destaques); 
+}
+
+.filter-buttons-container{
+    justify-content: space-around;
+}
+
+.todo-card.completed {
+  opacity: 0.8;
+  background-color: var(--paragrafos);
+}
+
+
+.todo-card.completed .todo-title {
+  text-decoration: line-through;
+}
+
+.edit-todo-card{
+    background-color: var(--paragrafos);
+    color: var(--titulos);
+}
+
+.todo-card[data-category="Pessoal"] {
+    border-left: 6px solid var(--destaques);
+}
+
+.todo-card[data-category="Profissional"] {
+    border-left: 6px solid var(--titulos);
+}
+
+.edit-todo-card h3{
+    color: var(--titulos);
+}
+
+.sr-only{
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+fieldset{
+    border: none;
+
+}
+
+#todo-list::-webkit-scrollbar {
+    width: 8px;
+}
+#todo-list::-webkit-scrollbar-thumb {
+    background: var(--titulos);
+}
+
+.search-todo-buttons-container{
+    width: 100%;
+    display: flex;
+    justify-content:flex-end;
+    gap: 1rem;
+}

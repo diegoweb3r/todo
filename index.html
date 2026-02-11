@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+
+    <title>To-Do Terefas</title>
+</head>
+<body>
+    <header>
+        <h1>Lista de tarefas</h1>
+        <p>Utilize seu cérebro para coisas mais importantes e anote suas tarefas</p>
+    </header>
+    <main>
+        <section id="controls-section">
+            <div class="control-card">
+                <h3 class="add-todo-title">Adicionar tarefa</h3>
+                <form class="add-todo">
+                    <div class="forms-container">
+                        <label for="todoText" class="sr-only">Digite sua tarefa</label>
+                        <input id="todoText" type="text" placeholder="Digite sua tarefa">
+                        <fieldset class="type-selector">
+                            <legend>
+                                <label>
+                                    <input type="radio" name="type-todo" value="Pessoal">
+                                    Pessoal
+                                </label>
+                                <label>
+                                    <input type="radio" name="type-todo" value="Profissional">
+                                    Profissional
+                                </label>
+                            </legend>
+                        </fieldset>
+                        <button type="submit" id="add-todo-button" class="control-buttons">Adicionar</button>
+                    </div>
+                    
+                </form>
+            </div>
+            <div class="control-card">
+                <h3>Buscar tarefa:</h3>
+                <form role="search" class="add-todo search-todo" >
+                    <label for="search-input" class="sr-only">Digite sua busca</label>
+                    <input id="search-input" type="search" placeholder="Busque sua tarefa">
+                    <div class="search-todo-buttons-container">
+                        <button class="control-buttons search-button" type="submit">Buscar</button>
+                        <button type="button" class="control-buttons clean-button">Limpar</button>
+                    </div>
+                </form>
+            </div>
+              <div class="control-card">
+                <h3>Filtrar tarefa:</h3>
+                <div class="add-todo filter-buttons-container">
+                    <button type="button" class="control-buttons incomplete-filter-button">A realizar</button>
+                    <button type="button" class="control-buttons complete-filter-button">Realizadas</button>
+                    <button type="button" class="control-buttons personal-filter-button">Pessoal</button>
+                    <button type="button" class="control-buttons profesional-filter-button">Profissional</button>
+                    <button type="button" class="control-buttons clean-button">Limpar</button>
+                </div>
+            </div>
+        </section>
+        <section id="todo-list">
+          
+        </section>
+    </main>
+</body>
+
+<script src="js.js"></script>
+</html>
