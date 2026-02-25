@@ -25,6 +25,7 @@
                     <div class="forms-container">
                         <label for="todoText" class="sr-only">Digite sua tarefa</label>
                         <input id="todoText" type="text" placeholder="Digite sua tarefa">
+                        <p id="error-msg" class="hidden">Digite o nome ou tipo da tarefa</p>
                         <fieldset class="type-selector">
                             <legend>
                                 <label>
@@ -49,7 +50,7 @@
                     <input id="search-input" type="search" placeholder="Busque sua tarefa">
                     <div class="search-todo-buttons-container">
                         <button class="control-buttons search-button" type="submit">Buscar</button>
-                        <button type="button" class="control-buttons clean-button">Limpar</button>
+                        <button type="button" class="control-buttons clean-button clean-search-button">Limpar</button>
                     </div>
                 </form>
             </div>

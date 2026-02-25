@@ -263,3 +263,13 @@ fieldset{
     justify-content:flex-end;
     gap: 1rem;
 }
+
+#error-msg{
+    margin: 0.3rem;
+    font-size: 0.8rem;
+    color: var(--titulos);
+}
+
+.hidden{
+    display: none;
+}

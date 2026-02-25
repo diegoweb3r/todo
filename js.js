@@ -7,50 +7,71 @@ const incompleteFilter = document.querySelector(".incomplete-filter-button");
 const completeFilter = document.querySelector(".complete-filter-button");
 const personalFilter = document.querySelector(".personal-filter-button");
 const profesionalFilter = document.querySelector(".profesional-filter-button");
-const cleanButton = document.querySelector(".clean-button");
+const cleanButton = document.querySelectorAll(".clean-button");
+const errorMsg = document.getElementById("error-msg");
+const filtersContainer = document.querySelector(".filter-buttons-container");
 
-addTodoButton.addEventListener("click", (e) => {
+
+function handleAddButtonClick(e){
   e.preventDefault();
-  addOrEditButton();
-});
-
-function addTodoValidation(todoText, todoType) {
-  if (todoText.trim() === "" || !todoType) {
-    alert("Digite o nome e/ou tipo da tarefa");
-    return false;
-  }
-
-  return true;
+  handleAddOrEdit();
 }
 
-function addOrEditButton() {
-  if (addTodoButton.textContent === "Adicionar") {
-    addTodo();
-  } else {
+addTodoButton.addEventListener("click", handleAddButtonClick);
+
+function isTodoValid(todoText, todoType) {
+  return todoText.trim() !== "" && !!todoType;
+}
+
+function handleAddOrEdit() {
+ if (todoEmEdicao) {
     saveEditedTodo();
+  } else {
+    addTodo();
   }
+}
+
+function getSelectedTodoType(){
+  const selected = document.querySelector('input[name="type-todo"]:checked');
+  return selected?.value || null;
+}
+
+function getSelectedTodoRadio(){
+  return document.querySelector('input[name="type-todo"]:checked');
 }
 
 function cleanAddTodoCard() {
-  const selectedType = document.querySelector(
-    'input[name="type-todo"]:checked',
-  );
+  const selectedTypeRadio = getSelectedTodoRadio();
   todoText.value = "";
   todoText.placeholder = "Digite sua tarefa";
-  if (selectedType) {
-    selectedType.checked = false;
+  if (selectedTypeRadio) {
+    selectedTypeRadio.checked = false;
   }
 }
 
 function addTodo() {
-  const selectedType = document.querySelector(
-    'input[name="type-todo"]:checked',
-  );
   const todoTextToAdd = todoText.value;
-  const todoTypeToAdd = selectedType?.value;
-  if (!addTodoValidation(todoTextToAdd, todoTypeToAdd)) return;
-  createTodoCard(todoTextToAdd, todoTypeToAdd);
+  const todoTypeToAdd = getSelectedTodoType();
+
+  if (!isTodoValid(todoTextToAdd, todoTypeToAdd)) {
+    showValidationError();
+    return
+  }
+
+  cleanValidationError();
+
+  const card = createTodoCard(todoTextToAdd, todoTypeToAdd);
+  todoList.appendChild(card);
+
   cleanAddTodoCard();
+}
+
+function showValidationError(){
+  errorMsg.classList.remove("hidden");
+}
+
+function cleanValidationError(){
+ errorMsg.classList.add("hidden");
 }
 
 function createTodoCard(text, type) {
@@ -75,21 +96,12 @@ function createTodoCard(text, type) {
   const buttonsContainerCard = document.createElement("div");
   buttonsContainerCard.classList.add("buttons-container");
 
-  const completeButton = document.createElement("button");
-  completeButton.classList.add("complete-todo");
-  completeButton.classList.add("control-buttons");
-  completeButton.textContent = "Completar";
-
-  const editButton = document.createElement("button");
-  editButton.classList.add("edit-todo");
-  editButton.classList.add("control-buttons");
-  editButton.textContent = "Editar";
-
-  const deleteButton = document.createElement("button");
-  deleteButton.classList.add("delete-todo");
-  deleteButton.classList.add("control-buttons");
-  deleteButton.textContent = "Excluir";
-
+  const completeButton = createButton("Completar", "complete-todo", "control-buttons");
+  
+  const editButton = createButton("Editar", "edit-todo", "control-buttons")
+ 
+  const deleteButton = createButton("Exlcuir", "delete-todo", "control-buttons")
+ 
   buttonsContainerCard.appendChild(completeButton);
   buttonsContainerCard.appendChild(editButton);
   buttonsContainerCard.appendChild(deleteButton);
@@ -97,45 +109,78 @@ function createTodoCard(text, type) {
   todoCard.appendChild(textContainerCard);
   todoCard.appendChild(buttonsContainerCard);
 
-  document.querySelector("#todo-list").appendChild(todoCard);
+  return todoCard;
 }
 
-todoList.addEventListener("click", (event) => {
-  completeTodo(event);
-  deleteTodo(event);
-  editTodo(event);
-});
+function createButton(text, ...classList){
+  const button = document.createElement("button");
+  button.textContent = text;
+  button.classList.add(...classList);
+  return button;
+}
 
-function completeTodo(event) {
-  if (event.target.classList.contains("complete-todo")) {
-    const todoCard = event.target.closest(".todo-card");
-    todoCard.classList.toggle("completed");
-    if (todoCard.classList.contains("completed")) {
+todoList.addEventListener("click", handleTodoListClick);
+
+function handleTodoListClick(event){
+  const button = event.target.closest("button");
+  if(!button) return;
+
+  if (button.classList.contains("complete-todo")) {
+    completeTodo(button);
+  } else if (button.classList.contains("delete-todo")) {
+    deleteTodo(button);
+  } else if (button.classList.contains("edit-todo")) {
+    editTodo(button);
+  }
+}
+
+function completeTodo(button) {
+    const todoCard = button.closest(".todo-card");
+    if(!todoCard) return;
+
+    const isCompleted = todoCard.classList.toggle("completed");
+
+    if (isCompleted) {
       todoList.appendChild(todoCard);
     } else {
       todoList.prepend(todoCard);
     }
-  }
 }
 
-function deleteTodo(event) {
-  if (event.target.classList.contains("delete-todo")) {
-    const todoCard = event.target.closest(".todo-card");
-    const confirmaçãoDelete = confirm("Voce quer deletar a tarefa?");
-    if (confirmaçãoDelete) {
-      todoCard.remove();
-    }
-  }
+function deleteTodo(button) {
+  const todoCard = button.closest(".todo-card");
+  if (!todoCard) return; 
+  if (!confirmDelete()) return;
+
+  todoCard.remove();
 }
 
-function editTodo(event) {
-  if (event.target.classList.contains("edit-todo")) {
-    if (!event.target.classList.contains("edit-todo")) return;
-    if (todoEmEdicao) {
-    alert("Por favor, salve ou cancele a edição atual antes de editar outra tarefa.");
-    return; 
-  }    const todoCard = event.target.closest(".todo-card");
-    todoEmEdicao = todoCard;
+function confirmDelete(){
+  return confirm("Voce quer deletar a tarefa?");
+}
+
+function editTodo(button) { 
+  if(!canStartEditing()) return;
+  const todoCard = button.closest(".todo-card");
+  if(!todoCard) return;
+  startEditing(todoCard);
+  
+}
+
+function canStartEditing(){
+  if (todoEmEdicao) {
+      alert("Por favor, salve ou cancele a edição atual antes de editar outra tarefa.");
+      return false; 
+  }
+  return true;
+}
+
+function startEditing(todoCard){
+  todoEmEdicao = todoCard;
+  markCardAsEditing(todoCard);
+}
+
+function markCardAsEditing(todoCard){
     const addTodoSectionTitle = document.querySelector(".add-todo-title");
     addTodoSectionTitle.textContent = "Editar tarefa";
     todoCard.classList.add("edit-todo-card");
@@ -151,19 +196,16 @@ function editTodo(event) {
     }
     const editButton = todoCard.querySelector(".edit-todo");
     editButton.style.visibility = "hidden";
-  }
 }
 
 function saveEditedTodo() {
   if (!todoEmEdicao) return;
 
-  const selectedType = document.querySelector(
-    'input[name="type-todo"]:checked',
-  );
-
+  const selectedType = getSelectedTodoType();
   todoEmEdicao.querySelector(".todo-title").textContent = todoText.value;
-  todoEmEdicao.querySelector(".todo-type").textContent = selectedType.value;
-
+  todoEmEdicao.querySelector(".todo-type").textContent = selectedType;
+  todoEmEdicao.dataset.category = selectedType.trim();
+  
   todoEmEdicao.classList.remove("edit-todo-card");
   const editButton = todoEmEdicao.querySelector(".edit-todo");
 
@@ -171,6 +213,7 @@ function saveEditedTodo() {
 
   addTodoButton.textContent = "Adicionar";
   document.querySelector(".add-todo-title").textContent = "Adicionar tarefa";
+
   cleanAddTodoCard();
 
   editButton.style.visibility = "visible";
@@ -194,69 +237,77 @@ searchTodo.addEventListener("click", (e) => {
   });
 });
 
-incompleteFilter.addEventListener("click", (e) => {
-  e.preventDefault();
+filtersContainer.addEventListener("click", handleTodoSearch);
+
+function handleTodoSearch(event){
+  const button = event.target.closest("button");
+  if(!button) return;
+
+  if (button.classList.contains("incomplete-filter-button")) {
+    incompleteTodoFilter(button);
+  } else if (button.classList.contains("complete-filter-button")) {
+    completeTodoFilter(button);
+  } else if (button.classList.contains("personal-filter-button")) {
+    personalTodoFilter(button);
+  } else if (button.classList.contains("profesional-filter-button")) {
+    profesionalTodoFilter(button);
+  } else if (button.classList.contains("clean-button")) {
+    cleanTodoFilter(button);
+  }
+}
+
+function incompleteTodoFilter() {
+  filterTodos(todo => !todo.classList.contains("completed"));
+};
+
+function completeTodoFilter(){
+  filterTodos(todo => todo.classList.contains("completed"));
+}
+
+function personalTodoFilter(){
+  filterTodos(todo => todo.dataset.category === "Pessoal");
+}
+
+function profesionalTodoFilter(){
+  filterTodos(todo => todo.dataset.category === "Profissional");
+}
+ 
+function cleanTodoFilter(){
+  resetSearchInput();
+  showAllTodos();
+}
+
+function filterTodos(predicate){
   const allTodos = document.querySelectorAll(".todo-card");
-
   allTodos.forEach((todo) => {
-    const isComplete = todo.classList.contains("completed");
-    if (!isComplete) {
-      todo.style.display = "flex";
-    } else {
-      todo.style.display = "none";
-    }
+    todo.style.display = predicate(todo) ? "flex" : "none";
   });
-});
+}
 
-completeFilter.addEventListener("click", (e) => {
-  e.preventDefault();
-  const allTodos = document.querySelectorAll(".todo-card");
-
-  allTodos.forEach((todo) => {
-    const isComplete = todo.classList.contains("completed");
-    if (isComplete) {
-      todo.style.display = "flex";
-    } else {
-      todo.style.display = "none";
-    }
-  });
-});
-
-personalFilter.addEventListener("click", (e) => {
-  e.preventDefault();
-  const allTodos = document.querySelectorAll(".todo-card");
-
-  allTodos.forEach((todo) => {
-    if (todo.dataset.category === "Pessoal") {
-      todo.style.display = "flex";
-    } else {
-      todo.style.display = "none";
-    }
-  });
-});
-
-profesionalFilter.addEventListener("click", (e) => {
-  e.preventDefault();
-  const allTodos = document.querySelectorAll(".todo-card");
-
-  allTodos.forEach((todo) => {
-    if (todo.dataset.category === "Profissional") {
-      todo.style.display = "flex";
-    } else {
-      todo.style.display = "none";
-    }
-  });
-});
-
-cleanButton.addEventListener("click", (e) => {
-  e.preventDefault();
+function resetSearchInput(){
   const searchInput = document.getElementById("search-input");
   searchInput.value = "";
   searchInput.placeholder = "Busque sua tarefa";
-  const allTodos = document.querySelectorAll(".todo-card");
-  allTodos.forEach((todo) => {
-    todo.style.display = "flex";
-  });
-
   searchInput.focus();
-});
+}
+
+function showAllTodos(){
+  filterTodos(() => true);
+}
+
+function handleSearchCardClick(event){
+  const button = event.target.closest("button");
+  if (!button) return;
+
+  if(button.classList.contains("clean-search-button")){
+    cleanSearch();
+  }
+}
+
+function cleanSearch(){
+  resetSearchInput();
+  showAllTodos();
+}
+
+const searchCard = document.querySelector(".search-todo-buttons-container");
+searchCard.addEventListener("click", handleSearchCardClick);
